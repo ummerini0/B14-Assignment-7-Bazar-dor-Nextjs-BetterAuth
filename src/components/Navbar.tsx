@@ -51,7 +51,7 @@ export default function Navbar({ user = null, onSignOut }: NavbarProps) {
   const today = useSyncExternalStore(subscribe, getClientDate, getServerDate);
 
   return (
-    <header className="sticky top-0 z-40 border-t-2 border-violet-400 bg-white/90 backdrop-blur">
+    <header className="border-t-2 border-violet-400 bg-white">
       {/* Row 1: logo + date, auth */}
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         <Link href="/" className="flex items-center gap-3">

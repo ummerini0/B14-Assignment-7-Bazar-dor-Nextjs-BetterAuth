@@ -18,8 +18,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="bn" data-theme="light">
       <body className={bangla.className}>
+        <div className="sticky top-0 z-40 bg-white shadow-sm">
         <Navbar />
         <PriceTicker />
+        </div>
         {children}
       </body>
     </html>
