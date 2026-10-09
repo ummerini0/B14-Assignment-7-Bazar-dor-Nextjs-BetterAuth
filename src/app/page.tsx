@@ -1,4 +1,5 @@
 import HeroBanner from "@/components/HeroBanner";
+import Footer from "@/components/Footer";
 
 type Product = {
   id: number;
@@ -189,6 +190,7 @@ export default async function Page() {
     <main className="min-h-screen bg-[#f0f5f1] px-4 py-6 sm:px-6">
       <div className="mx-auto max-w-7xl space-y-8">
       <HeroBanner />
+      
         <ProductSection
           title="🔺 আজ দাম বেড়েছে"
           products={risers}

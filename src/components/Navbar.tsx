@@ -125,7 +125,7 @@ export default function Navbar({ user = null, onSignOut }: NavbarProps) {
 
       {/* Row 2: category links */}
       <nav className="border-t border-neutral-100 bg-green-50/40">
-        <ul className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-4 py-2 [scrollbar-width:none]">
+        <ul className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-4 py-2 scrollbar-width: none;">
           {categories.map((c) => {
             const href = `/category/${c.slug}`;
             const active = pathname === href || pathname.startsWith(`${href}/`);

@@ -23,7 +23,7 @@ export default function HeroBanner() {
             আজকের বাজারের দাম এক নজরে
           </h1>
 
-          <p className="mt-4 max-w-[530px] text-sm leading-6 text-[#68776e]">
+          <p className="mt-4 max-width: 530px; text-sm leading-6 text-[#68776e]">
             চাল, ডাল, তেল, সবজি, মাছ, মাংস, ডিম ও মসলার দাম –
             বাজারের সর্বনিম্ন, সর্বোচ্চ এবং দামের পরিবর্তন
             এক জায়গায়।
@@ -44,7 +44,7 @@ export default function HeroBanner() {
             width={240}
             height={210}
             priority
-            className="h-auto w-full max-w-[240px] object-contain"
+            className="h-auto w-full max-width: 240px; object-contain"
           />
         </div>
       </div>
