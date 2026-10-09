@@ -186,11 +186,13 @@ export default async function Page() {
     .sort((a, b) => a.change.pct - b.change.pct)
     .slice(0, 6);
 
-  return (
-    <main className="min-h-screen bg-[#f0f5f1] px-4 py-6 sm:px-6">
+  
+return (
+  <div className="flex min-h-screen flex-col bg-[#f0f5f1]">
+    <main className="w-full flex-1 px-4 py-6 pb-20 sm:px-6">
       <div className="mx-auto max-w-7xl space-y-8">
-      <HeroBanner />
-      
+        <HeroBanner />
+
         <ProductSection
           title="🔺 আজ দাম বেড়েছে"
           products={risers}
@@ -208,5 +210,8 @@ export default async function Page() {
         />
       </div>
     </main>
-  );
+
+    <Footer />
+  </div>
+);
 }
