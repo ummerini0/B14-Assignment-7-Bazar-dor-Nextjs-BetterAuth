@@ -1,69 +1,210 @@
-import Image from "next/image";
+import HeroBanner from "@/components/HeroBanner";
 
-export default function Home() {
+type Product = {
+  id: number;
+  slug: string;
+  nameBn: string;
+  category: string;
+  categoryNameBn: string;
+  categoryIcon: string;
+  unit: string;
+  image: string;
+  today: number;
+  yesterday: number;
+  lastWeek: number;
+  lastMonth: number;
+  change: {
+    dir: "up" | "down" | "flat";
+    pct: number;
+  };
+};
+
+const API_URL =
+  "https://api.api-store.workers.dev/api/bazardor/products";
+
+const bn = new Intl.NumberFormat("bn-BD", {
+  maximumFractionDigits: 2,
+});
+
+const unitNames: Record<string, string> = {
+  kg: "প্রতি কেজি",
+  liter: "প্রতি লিটার",
+  litre: "প্রতি লিটার",
+  dozen: "প্রতি ডজন",
+  piece: "প্রতি পিস",
+  pcs: "প্রতি পিস",
+  gram: "প্রতি গ্রাম",
+};
+
+async function getProducts(): Promise<Product[]> {
+  const response = await fetch(API_URL, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
+  }
+
+  const json: unknown = await response.json();
+
+  // API response may be an array or an object containing products.
+  if (Array.isArray(json)) {
+    return json as Product[];
+  }
+
+  if (json && typeof json === "object") {
+    const data = json as {
+      products?: Product[];
+      data?: Product[] | { products?: Product[] };
+    };
+
+    if (Array.isArray(data.products)) return data.products;
+    if (Array.isArray(data.data)) return data.data;
+
+    if (
+      data.data &&
+      !Array.isArray(data.data) &&
+      Array.isArray(data.data.products)
+    ) {
+      return data.data.products;
+    }
+  }
+
+  return [];
+}
+
+function ProductCard({ product }: { product: Product }) {
+  const direction = product.change?.dir ?? "flat";
+  const percentage = Number(product.change?.pct ?? 0);
+
+  const badgeStyle =
+    direction === "up"
+      ? "bg-red-50 text-red-600"
+      : direction === "down"
+        ? "bg-green-50 text-green-700"
+        : "bg-gray-100 text-gray-500";
+
+  const arrow =
+    direction === "up" ? "▲" : direction === "down" ? "▼" : "—";
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <article className="rounded-xl border border-[#e3ebe5] bg-[#f9fcfa] p-3 transition-shadow hover:shadow-sm sm:p-4">
+      <div className="flex items-center gap-3">
+        <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#eff4ef] text-2xl">
+          {product.image || product.categoryIcon || "🛒"}
+        </div>
+
+        <div className="min-w-0">
+          <h3 className="text-sm font-bold text-[#17231b] sm:text-base">
+            {product.nameBn}
+          </h3>
+
+          <p className="mt-0.5 text-xs text-gray-500">
+            {unitNames[product.unit] ?? `প্রতি ${product.unit}`}
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      </div>
+
+      <div className="mt-3">
+        <p className="text-xs text-gray-500">আজকের দাম</p>
+
+        <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
+          <p className="text-base font-bold text-[#17231b]">
+            {bn.format(product.today)} টাকা
+          </p>
+
+          <span
+            className={`inline-flex items-center rounded-full px-2 py-1 text-[11px] font-semibold ${badgeStyle}`}
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            {arrow} {bn.format(Math.abs(percentage))}%
+          </span>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function ProductSection({
+  title,
+  products,
+  subtitle,
+}: {
+  title: string;
+  products: Product[];
+  subtitle?: string;
+}) {
+  return (
+    <section className="mt-8 first:mt-0">
+      <h2 className="text-lg font-extrabold text-[#17231b]">
+        {title}
+      </h2>
+
+      {subtitle && (
+        <p className="mt-1 text-sm text-gray-500">{subtitle}</p>
+      )}
+
+      {products.length === 0 ? (
+        <p className="mt-3 text-sm text-gray-500">
+          এই বিভাগে কোনো পণ্য নেই।
+        </p>
+      ) : (
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+export default async function Page() {
+  let products: Product[] = [];
+
+  try {
+    products = await getProducts();
+  } catch (error) {
+    console.error("Failed to fetch bazardor products:", error);
+
+    return (
+      <main className="min-h-screen bg-[#f0f5f1] p-6">
+        <div className="mx-auto max-w-7xl rounded-xl bg-white p-5 text-red-600">
+          বাজারদর লোড করা যায়নি। Terminal-এর error পরীক্ষা করো।
         </div>
       </main>
-    </div>
+    );
+  }
+
+  const risers = products
+    .filter((p) => p.change?.dir === "up")
+    .sort((a, b) => b.change.pct - a.change.pct)
+    .slice(0, 6);
+
+  const fallers = products
+    .filter((p) => p.change?.dir === "down")
+    .sort((a, b) => a.change.pct - b.change.pct)
+    .slice(0, 6);
+
+  return (
+    <main className="min-h-screen bg-[#f0f5f1] px-4 py-6 sm:px-6">
+      <div className="mx-auto max-w-7xl space-y-8">
+      <HeroBanner />
+        <ProductSection
+          title="🔺 আজ দাম বেড়েছে"
+          products={risers}
+        />
+
+        <ProductSection
+          title="🟢 আজ দাম কমেছে"
+          products={fallers}
+        />
+
+        <ProductSection
+          title="সব পণ্য"
+          subtitle={`মোট ${bn.format(products.length)}টি পণ্যের বর্তমান বাজারদর`}
+          products={products}
+        />
+      </div>
+    </main>
   );
 }
