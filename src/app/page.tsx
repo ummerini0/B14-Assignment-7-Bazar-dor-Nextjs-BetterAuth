@@ -1,3 +1,4 @@
+import Link from "next/link";
 import HeroBanner from "@/components/HeroBanner";
 import Footer from "@/components/Footer";
 
@@ -21,7 +22,7 @@ type Product = {
 };
 
 const API_URL =
-  "https://api.api-store.workers.dev/api/bazardor/products";
+  "https://api.abcz.workers.dev/api/bazardor/products";
 
 const bn = new Intl.NumberFormat("bn-BD", {
   maximumFractionDigits: 2,
@@ -74,6 +75,7 @@ async function getProducts(): Promise<Product[]> {
   return [];
 }
 
+
 function ProductCard({ product }: { product: Product }) {
   const direction = product.change?.dir ?? "flat";
   const percentage = Number(product.change?.pct ?? 0);
@@ -89,42 +91,51 @@ function ProductCard({ product }: { product: Product }) {
     direction === "up" ? "▲" : direction === "down" ? "▼" : "—";
 
   return (
-    <article className="rounded-xl border border-[#e3ebe5] bg-[#f9fcfa] p-3 transition-shadow hover:shadow-sm sm:p-4">
-      <div className="flex items-center gap-3">
-        <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#eff4ef] text-2xl">
-          {product.image || product.categoryIcon || "🛒"}
+    <Link
+      href={`/product/${product.slug}`}
+      className="block rounded-xl focus:outline-none focus:ring-2 focus:ring-green-600"
+      aria-label={`${product.nameBn} এর বিস্তারিত দেখুন`}
+    >
+      <article className="h-full rounded-xl border border-[#e3ebe5] bg-[#f9fcfa] p-3 transition-all hover:-translate-y-0.5 hover:border-green-300 hover:shadow-md sm:p-4">
+        <div className="flex items-center gap-3">
+          <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#eff4ef] text-2xl">
+            {product.image || product.categoryIcon || "🛒"}
+          </div>
+
+          <div className="min-w-0">
+            <h3 className="text-sm font-bold text-[#17231b] sm:text-base">
+              {product.nameBn}
+            </h3>
+
+            <p className="mt-0.5 text-xs text-gray-500">
+              {unitNames[product.unit] ?? `প্রতি ${product.unit}`}
+            </p>
+          </div>
         </div>
 
-        <div className="min-w-0">
-          <h3 className="text-sm font-bold text-[#17231b] sm:text-base">
-            {product.nameBn}
-          </h3>
+        <div className="mt-3">
+          <p className="text-xs text-gray-500">আজকের দাম</p>
 
-          <p className="mt-0.5 text-xs text-gray-500">
-            {unitNames[product.unit] ?? `প্রতি ${product.unit}`}
-          </p>
+          <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
+            <p className="text-base font-bold text-[#17231b]">
+              {bn.format(product.today)} টাকা
+            </p>
+
+            <span
+              className={`inline-flex items-center rounded-full px-2 py-1 text-[11px] font-semibold ${badgeStyle}`}
+            >
+              {arrow} {bn.format(Math.abs(percentage))}%
+            </span>
+          </div>
         </div>
-      </div>
 
-      <div className="mt-3">
-        <p className="text-xs text-gray-500">আজকের দাম</p>
-
-        <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
-          <p className="text-base font-bold text-[#17231b]">
-            {bn.format(product.today)} টাকা
-          </p>
-
-          <span
-            className={`inline-flex items-center rounded-full px-2 py-1 text-[11px] font-semibold ${badgeStyle}`}
-          >
-            {arrow} {bn.format(Math.abs(percentage))}%
-          </span>
-        </div>
-      </div>
-    </article>
+        <p className="mt-3 text-xs font-semibold text-green-700">
+          বিস্তারিত দেখুন →
+        </p>
+      </article>
+    </Link>
   );
 }
-
 function ProductSection({
   title,
   products,

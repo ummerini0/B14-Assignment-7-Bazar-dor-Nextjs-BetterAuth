@@ -7,7 +7,7 @@ type Product = {
   change: { dir: "up" | "down" | "flat"; pct: number };
 };
 
-const API_URL = "https://api.api-store.workers.dev/api/bazardor/products";
+const API_URL = "https://api.abcz.workers.dev/api/bazardor/products";
 
 const unitBn: Record<string, string> = {
   kg: "কেজি",

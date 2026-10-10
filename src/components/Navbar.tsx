@@ -124,30 +124,35 @@ export default function Navbar({ user = null, onSignOut }: NavbarProps) {
       </div>
 
       {/* Row 2: category links */}
-      <nav className="border-t border-neutral-100 bg-green-50/40">
-        <ul className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-4 py-2 scrollbar-width: none;">
-          {categories.map((c) => {
-            const href = `/category/${c.slug}`;
-            const active = pathname === href || pathname.startsWith(`${href}/`);
-            return (
-              <li key={c.slug} className="shrink-0">
-                <Link
-                  href={href}
-                  aria-current={active ? "page" : undefined}
-                  className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm transition-colors ${
-                    active
-                      ? "bg-green-600 font-semibold text-white shadow-sm"
-                      : "text-neutral-700 hover:bg-green-100"
-                  }`}
-                >
-                  <span aria-hidden>{c.icon}</span>
-                  {c.label}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
+      
+<nav className="border-t border-neutral-100 bg-green-50/40">
+  <ul className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-4 py-2 scrollbar-width: none;">
+    {categories.map((c) => {
+      const slug = c.slug === "rice" ? "chal" : c.slug;
+      const href = `/category/${slug}`;
+      const active = pathname === href || pathname.startsWith(`${href}/`);
+
+      return (
+        <li key={c.slug} className="shrink-0">
+          <Link
+            href={href}
+            aria-current={active ? "page" : undefined}
+            className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm transition-colors ${
+              active
+                ? "bg-green-600 font-semibold text-white shadow-sm"
+                : "text-neutral-700 hover:bg-green-100"
+            }`}
+          >
+            <span aria-hidden>{c.icon}</span>
+            {c.label}
+          </Link>
+        </li>
+      );
+    })}
+  </ul>
+</nav>
+
+
     </header>
   );
 }
