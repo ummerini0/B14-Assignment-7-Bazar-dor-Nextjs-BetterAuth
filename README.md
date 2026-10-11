@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🛒 বাজার দর (BazarDor)
 
-## Getting Started
+> প্রয়োজনীয় পণ্যের দাম এক নজরে — a Bangla web app to track daily prices of everyday grocery items.
 
-First, run the development server:
+
+
+## 📖 About
+
+**বাজার দর (BazarDor)** helps people in Bangladesh check today's market prices of daily essentials such as rice, lentils, oil, vegetables, fish, meat, eggs, milk and spices. The whole interface is in Bangla, with Bangla numerals and dates, and shows at a glance whether a price went up or down compared with the previous day.
+
+## ✨ Key Features
+
+1. **Live price ticker** — an infinite scrolling strip under the navbar shows each item's name, price per unit (টাকা/কেজি, লিটার, ডজন…) and a ▲ / ▼ percentage change.
+2. **Category browsing** — eight categories (চাল, ডাল, তেল, সবজি, মাছ, মাংস, ডিম-দুধ, মসলা) with product cards showing today's price, unit and price change, plus loading skeletons while data is fetched.
+3. **Price sorting** — a "সাজান" dropdown sorts products by default order, price low to high, or price high to low. Prices are compared by numeric value, so Bangla numerals are sorted correctly.
+4. **Secure authentication** — sign up and sign in with email and password or with Google, built with Better Auth and stored in MongoDB. Success and error messages appear as toast notifications.
+5. **Profile management** — logged-in users can view their profile, update their name on a separate page and see a success pop-up. Profile pages are protected, so visitors who are not signed in are redirected to the sign in page.
+
+## 🛠️ Technologies Used
+
+| Area | Technology |
+|---|---|
+| Framework | [Next.js] (App Router) |
+| Language | TypeScript |
+| Styling | Tailwind CSS, daisyUI |
+| Authentication | [Better Auth] (email/password, Google) |
+| Database | MongoDB |
+| Notifications | React toast |
+| Data source | Bazar price API |
+| Deployment 
+
+## 🚀 Getting Started
+
+### 1. Clone and install
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone 
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Set up environment variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Create a `.env` file in the project root:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+- Generate a secret 
+- In Google Cloud Console, add `http://localhost:3000/api/auth/callback/google` as an authorized redirect URI.
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 3. Run the app
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+bash
+npm run dev
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Open [http://localhost:3000](http://localhost:3000).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📁 Project Structure
+
+
+src/
+├── app/
+│   ├── api/auth/[...all]/   # Better Auth route
+│   ├── category/[slug]/     # Category pages (with loading skeleton)
+│   ├── product/[slug]/      # Product detail pages
+│   ├── profile/             # Profile and update pages
+│   ├── signin/  signup/     # Authentication pages
+│   └── layout.tsx
+├── components/              # Navbar, PriceTicker, Footer, AuthCard
+└── lib/                     # auth.ts, auth-client.ts, helpers
+```
+
+## 🌐 Deployment
+
+
+
