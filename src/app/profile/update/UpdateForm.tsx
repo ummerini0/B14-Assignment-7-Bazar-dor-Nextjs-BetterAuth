@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
 
 export default function UpdateForm({ currentName }: { currentName: string }) {
@@ -43,7 +43,7 @@ export default function UpdateForm({ currentName }: { currentName: string }) {
       return;
     }
     if (trimmed === currentName) {
-      toast.info("নামে কোনো পরিবর্তন করা হয়নি");
+      toast("নামে কোনো পরিবর্তন করা হয়নি", { icon: "ℹ️" });
       return;
     }
 

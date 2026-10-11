@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { toast } from "sonner";
+import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
 
 type Props = {
@@ -50,7 +50,7 @@ export default function AuthCard({
 
         <div className="divider my-4 text-xs text-neutral-500">অথবা</div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <button
             type="button"
             onClick={() => social("google")}

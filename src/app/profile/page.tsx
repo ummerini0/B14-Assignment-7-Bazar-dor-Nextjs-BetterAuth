@@ -5,7 +5,7 @@ import ProfileView from "./ProfileView";
 
 export default async function ProfilePage() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) redirect("/signin");
+  if (!session) redirect("/signin?reason=login-required");
 
   const { name, email, image } = session.user;
 

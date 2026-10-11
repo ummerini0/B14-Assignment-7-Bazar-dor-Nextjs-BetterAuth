@@ -6,7 +6,7 @@ import UpdateForm from "./UpdateForm";
 
 export default async function UpdateProfilePage() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) redirect("/signin");
+  if (!session) redirect("/signin?reason=login-required");
 
   return (
     <div className="mx-auto w-full max-w-md px-4 py-10">

@@ -1,3 +1,4 @@
+import ToasterProvider from "@/components/ToasterProvider";
 import type { Metadata } from "next";
 import { Hind_Siliguri } from "next/font/google";
 import Navbar from "@/components/Navbar";
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="sticky top-0 z-40 bg-white shadow-sm">
         <Navbar />
         <PriceTicker />
+        <ToasterProvider /> 
         </div>
         {children}
       </body>

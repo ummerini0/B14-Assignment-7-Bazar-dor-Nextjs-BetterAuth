@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useSyncExternalStore } from "react";
-import { toast } from "sonner";
+import { useEffect, useSyncExternalStore } from "react";
+import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
 
 const categories = [
@@ -33,7 +33,6 @@ function formatBanglaDate(date: Date) {
   return `${get("weekday")}, ${get("day")} ${get("month")}, ${get("year")}`;
 }
 
-// Server renders an empty date, the browser fills it in (no hydration mismatch)
 const subscribe = () => () => {};
 const getClientDate = () => formatBanglaDate(new Date());
 const getServerDate = () => "";
@@ -44,6 +43,13 @@ export default function Navbar() {
   const { data: session, isPending } = authClient.useSession();
   const today = useSyncExternalStore(subscribe, getClientDate, getServerDate);
   const user = session?.user;
+
+  // On phones the category row scrolls sideways, so keep the active one in view
+  useEffect(() => {
+    document
+      .querySelector('nav [aria-current="page"]')
+      ?.scrollIntoView({ inline: "center", block: "nearest" });
+  }, [pathname]);
 
   async function handleSignOut() {
     await authClient.signOut({
@@ -63,31 +69,31 @@ export default function Navbar() {
   return (
     <header className="border-t-2 border-violet-400 bg-white">
       {/* Row 1: logo + date, auth */}
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Link href="/" className="flex items-center gap-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-green-600 text-xl shadow-sm">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 py-2 sm:px-4 sm:py-3">
+        <Link href="/" className="flex min-w-0 items-center gap-2 sm:gap-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-green-600 text-lg shadow-sm sm:h-11 sm:w-11 sm:text-xl">
             🛒
           </span>
-          <span className="leading-tight">
-            <span className="block text-xl font-bold text-neutral-900">
+          <span className="min-w-0 leading-tight">
+            <span className="block truncate text-lg font-bold text-neutral-900 sm:text-xl">
               বাজার দর
             </span>
-            <span className="block min-h-4 text-xs text-neutral-500">
+            <span className="block min-h-4 truncate text-[11px] text-neutral-500 sm:text-xs">
               {today}
             </span>
           </span>
         </Link>
 
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1 sm:gap-2">
           {isPending ? (
-            <span className="skeleton h-10 w-32 rounded-full" />
+            <span className="skeleton h-8 w-24 rounded-full sm:h-10 sm:w-32" />
           ) : user ? (
             <div className="dropdown dropdown-end">
               <button
                 tabIndex={0}
-                className="flex items-center gap-2 rounded-full px-2 py-1 hover:bg-neutral-100"
+                className="flex items-center gap-2 rounded-full px-1.5 py-1 hover:bg-neutral-100 sm:px-2"
               >
-                <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-neutral-200 text-sm font-semibold text-neutral-600">
+                <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-neutral-200 text-sm font-semibold text-neutral-600 sm:h-9 sm:w-9">
                   {user.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -123,25 +129,25 @@ export default function Navbar() {
           ) : (
             <>
               <Link
-    href="/signin"
-    className="rounded-full px-4 py-1.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-green-50 active:bg-green-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-  >
-    সাইন ইন
-  </Link>
-  <Link
-    href="/signup"
-    className="rounded-full bg-green-600 px-4 py-1.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-green-700 active:bg-green-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-  >
-    সাইন আপ
-  </Link>
+                href="/signin"
+                className="rounded-full px-3 py-1.5 text-xs font-medium text-neutral-700 transition-colors hover:bg-green-50 active:bg-green-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 sm:px-4 sm:text-sm"
+              >
+                সাইন ইন
+              </Link>
+              <Link
+                href="/signup"
+                className="rounded-full bg-green-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-green-700 active:bg-green-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 sm:px-4 sm:text-sm"
+              >
+                সাইন আপ
+              </Link>
             </>
           )}
         </div>
       </div>
 
-      {/* Row 2: category links */}
+      {/* Row 2: category links (scrolls sideways on small screens) */}
       <nav className="border-t border-neutral-100 bg-green-50/40">
-        <ul className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-4 py-2 [scrollbar-width:none]">
+        <ul className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-3 py-1.5 [scrollbar-width:none] sm:px-4 sm:py-2">
           {categories.map((c) => {
             const href = `/category/${c.slug}`;
             const active = pathname === href || pathname.startsWith(`${href}/`);
@@ -151,7 +157,7 @@ export default function Navbar() {
                 <Link
                   href={href}
                   aria-current={active ? "page" : undefined}
-                  className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm transition-colors ${
+                  className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs transition-colors sm:gap-1.5 sm:py-1.5 sm:text-sm ${
                     active
                       ? "bg-green-600 font-semibold text-white shadow-sm"
                       : "text-neutral-700 hover:bg-green-100"

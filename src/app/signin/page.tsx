@@ -2,10 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast } from "sonner";
+import toast from "react-hot-toast";
 import AuthCard from "@/components/AuthCard";
 import { authClient } from "@/lib/auth-client";
 import { banglaAuthError } from "@/lib/auth-errors";
+
+import { Suspense } from "react";
+import RedirectToast from "@/components/RedirectToast";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -45,6 +48,10 @@ export default function SignInPage() {
   });
   } 
   return (
+    <>
+    <Suspense fallback={null}>
+      <RedirectToast />
+    </Suspense>
     <AuthCard
       title="সাইন ইন"
       subtitle="বিস্তারিত দাম, বাজার তুলনা ও প্রোফাইল দেখতে অ্যাকাউন্টে ঢুকুন।"
@@ -91,5 +98,6 @@ export default function SignInPage() {
         </button>
       </form>
     </AuthCard>
+    </>
   );
 }
