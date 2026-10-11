@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo, useState } from "react";
@@ -13,7 +12,7 @@ type Product = {
   categoryIcon: string;
   unit: string;
   image: string;
-  today: number;
+  today: number | string; // may arrive as a number or Bengali text like "১,২৫০"
   yesterday: number;
   lastWeek: number;
   lastMonth: number;
@@ -39,6 +38,20 @@ const unitNames: Record<string, string> = {
   gram: "প্রতি গ্রাম",
 };
 
+const BN_DIGITS = "০১২৩৪৫৬৭৮৯";
+
+// Converts 1250, "1250", "১২৫০", "১,২৫০ টাকা" or "৳৯৯" to a real number.
+// Returns NaN when the value cannot be read as a number.
+function toNumber(value: number | string): number {
+  if (typeof value === "number") return value;
+
+  const ascii = value
+    .replace(/[০-৯]/g, (d) => String(BN_DIGITS.indexOf(d)))
+    .replace(/[^\d.]/g, "");
+
+  return ascii ? parseFloat(ascii) : NaN;
+}
+
 export default function CategoryProductsClient({
   products,
 }: {
@@ -47,45 +60,60 @@ export default function CategoryProductsClient({
   const [sort, setSort] = useState<SortOption>("default");
 
   const sortedProducts = useMemo(() => {
-    const result = [...products];
+    if (sort === "default") return products; // original order
 
-    if (sort === "asc") {
-      result.sort((a, b) => a.today - b.today);
-    } else if (sort === "desc") {
-      result.sort((a, b) => b.today - a.today);
-    }
+    return [...products].sort((a, b) => {
+      const priceA = toNumber(a.today);
+      const priceB = toNumber(b.today);
 
-    return result;
+      // Unreadable prices always go to the end
+      if (Number.isNaN(priceA) && Number.isNaN(priceB)) return 0;
+      if (Number.isNaN(priceA)) return 1;
+      if (Number.isNaN(priceB)) return -1;
+
+      return sort === "asc" ? priceA - priceB : priceB - priceA;
+    });
   }, [products, sort]);
 
   return (
     <>
       <div className="flex items-center justify-end gap-2 rounded-xl border border-[#e3ebe5] bg-[#f9fcfa] px-4 py-3">
-        <label
-          htmlFor="category-sort"
-          className="text-sm text-gray-600"
-        >
+        <label htmlFor="category-sort" className="text-sm text-gray-600">
           সাজান
         </label>
 
-        <select
-          id="category-sort"
-          value={sort}
-          onChange={(event) =>
-            setSort(event.target.value as SortOption)
-          }
-          className="max-w-full rounded-lg border border-[#dce7de] bg-white px-3 py-2 text-sm text-[#234b3d] outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
-        >
-          <option value="default">ডিফল্ট</option>
-          <option value="asc">দাম: কম থেকে বেশি</option>
-          <option value="desc">দাম: বেশি থেকে কম</option>
-        </select>
+        <div className="relative">
+          <select
+            id="category-sort"
+            value={sort}
+            onChange={(event) => setSort(event.target.value as SortOption)}
+            className="max-w-full appearance-none rounded-lg border border-[#dce7de] bg-white py-2 pl-3 pr-9 text-sm text-[#234b3d] outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
+          >
+            <option value="default">ডিফল্ট</option>
+            <option value="asc">দাম: কম থেকে বেশি</option>
+            <option value="desc">দাম: বেশি থেকে কম</option>
+          </select>
+
+          <svg
+            viewBox="0 0 20 20"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#234b3d]"
+            aria-hidden
+          >
+            <path d="M5 8l5 5 5-5" />
+          </svg>
+        </div>
       </div>
 
       <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {sortedProducts.map((product) => {
           const direction = product.change?.dir ?? "flat";
           const percentage = Number(product.change?.pct ?? 0);
+          const price = toNumber(product.today);
 
           const badgeStyle =
             direction === "up"
@@ -95,11 +123,7 @@ export default function CategoryProductsClient({
                 : "bg-gray-100 text-gray-500";
 
           const arrow =
-            direction === "up"
-              ? "▲"
-              : direction === "down"
-                ? "▼"
-                : "—";
+            direction === "up" ? "▲" : direction === "down" ? "▼" : "—";
 
           return (
             <Link
@@ -114,11 +138,10 @@ export default function CategoryProductsClient({
 
                 <div className="min-w-0">
                   <h2 className="text-sm font-bold text-[#17231b] no-underline sm:text-base">
-  {product.nameBn}
-</h2>
+                    {product.nameBn}
+                  </h2>
                   <p className="mt-0.5 text-xs text-gray-500">
-                    {unitNames[product.unit] ??
-                      `প্রতি ${product.unit}`}
+                    {unitNames[product.unit] ?? `প্রতি ${product.unit}`}
                   </p>
                 </div>
               </div>
@@ -127,7 +150,7 @@ export default function CategoryProductsClient({
                 <p className="text-xs text-gray-500">আজকের দাম</p>
                 <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
                   <p className="text-base font-bold text-[#17231b]">
-                    {bn.format(product.today)} টাকা
+                    {Number.isNaN(price) ? "—" : `${bn.format(price)} টাকা`}
                   </p>
 
                   <span
